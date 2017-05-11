@@ -23,15 +23,15 @@ public final class PetContract {
         // Unique ID for pet, Type: INTEGER
         public static final String _ID = BaseColumns._ID;
         // Name of pet, Type: STRING
-        public static final String COLUMN_NAME_PET_NAME = "name";
+        public static final String COLUMN_PET_NAME = "name";
         // Breed of pet, Type: STRING
-        public static final String COLUMN_NAME_PET_BREED = "breed";
+        public static final String COLUMN_PET_BREED = "breed";
         // Gender of pet, Type: INTEGER
         // Possible values are {@link #GENDER_UNKNOWN}, {@link #GENDER_MALE},
         // or {@link #GENDER_FEMALE}
-        public static final String COLUMN_NAME_PET_GENDER = "gender";
+        public static final String COLUMN_PET_GENDER = "gender";
         // Weight of pet (in kg), Type: INTEGER
-        public static final String COLUMN_NAME_PET_WEIGHT = "weight";
+        public static final String COLUMN_PET_WEIGHT = "weight";
 
         // Possible values for pet gender
         public static final int GENDER_UNKNOWN = 0;

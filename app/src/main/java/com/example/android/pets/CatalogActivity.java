@@ -28,6 +28,8 @@ import android.view.View;
  */
 public class CatalogActivity extends AppCompatActivity {
 
+    private static final String TAG = CatalogActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -156,7 +156,8 @@ public class EditorActivity extends AppCompatActivity {
             values.put(PetEntry.COLUMN_PET_BREED, mBreedEditText.getText().toString().trim());
         }
         if (!TextUtils.isEmpty(mWeightEditText.getText())) {
-            values.put(PetEntry.COLUMN_PET_WEIGHT, mWeightEditText.getText().toString().trim());
+            int weight = Integer.parseInt(mWeightEditText.getText().toString().trim());
+            values.put(PetEntry.COLUMN_PET_WEIGHT, weight);
         }
         values.put(PetEntry.COLUMN_PET_GENDER, mGender);
 

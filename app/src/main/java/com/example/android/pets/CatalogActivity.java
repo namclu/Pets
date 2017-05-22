@@ -106,8 +106,14 @@ public class CatalogActivity extends AppCompatActivity {
 
         // Perform SQL query "SELECT * FRO M pets" using .query
         // to get a Cursor that contains all rows from the pets table.
-        Cursor cursor = db.query(PetEntry.TABLE_NAME,
-                null, null, null, null, null, null);
+        Cursor cursor = db.query(
+                PetEntry.TABLE_NAME,    // Table to query
+                null,                   // Columns to return
+                null,                   // Columns for the WHERE clause
+                null,                   // Values for the WHERE clause
+                null,                   // Don't group the rows
+                null,                   // Don't filter by row groups
+                null);                  // Sort order
 
         TextView displayView = (TextView) findViewById(R.id.text_view_pet);
 

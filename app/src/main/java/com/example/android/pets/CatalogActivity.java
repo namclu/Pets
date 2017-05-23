@@ -97,23 +97,32 @@ public class CatalogActivity extends AppCompatActivity {
      * the pets database.
      */
     private void displayDatabaseInfo() {
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
-        PetDbHelper mDbHelper = new PetDbHelper(this);
+        // Projection specifies which columns from db the query will actually use
+        String[] projection = {
+                PetEntry._ID,
+                PetEntry.COLUMN_PET_NAME,
+                PetEntry.COLUMN_PET_BREED,
+                PetEntry.COLUMN_PET_GENDER,
+                PetEntry.COLUMN_PET_WEIGHT};
 
-        // Create and/or open a database to read from it
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
-
-        // Perform SQL query "SELECT * FRO M pets" using .query
+        // Perform SQL query "SELECT * FROM pets" using .query
         // to get a Cursor that contains all rows from the pets table.
-        Cursor cursor = db.query(
+        /*Cursor cursor = db.query(
                 PetEntry.TABLE_NAME,    // Table to query
                 null,                   // Columns to return
                 null,                   // Columns for the WHERE clause
                 null,                   // Values for the WHERE clause
                 null,                   // Don't group the rows
                 null,                   // Don't filter by row groups
-                null);                  // Sort order
+                null);                  // Sort order*/
+
+        // Call ContentResolver query() method, which will call PetProvider query() method
+        Cursor cursor = getContentResolver().query(
+                PetEntry.CONTENT_URI,   // Content URI
+                projection,             // Project
+                null,                   // Selection
+                null,                   // SelectionArgs
+                null);                  // Sort Order
 
         TextView displayView = (TextView) findViewById(R.id.text_view_pet);
 

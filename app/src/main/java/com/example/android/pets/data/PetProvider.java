@@ -11,6 +11,8 @@ import android.util.Log;
 
 import com.example.android.pets.data.PetContract.PetEntry;
 
+import static com.example.android.pets.data.PetContract.PetEntry.isValidGender;
+
 /**
  * Created by namlu on 11-May-17.
  *
@@ -126,6 +128,24 @@ public class PetProvider extends ContentProvider {
      * for that specific row in the database.
      */
     private Uri insertPet(Uri uri, ContentValues values) {
+
+        // Check pet name is not null
+        String name = values.getAsString(PetEntry.COLUMN_PET_NAME);
+        if (name == null) {
+            throw new IllegalArgumentException("Pet requires valid name");
+        }
+
+        // Check pet gender == GENDER_UNKNOWN OR GENDER_MALE OR GENDER_FEMALE
+        Integer gender = values.getAsInteger(PetEntry.COLUMN_PET_GENDER);
+        if (gender == null || !isValidGender(gender)) {
+            throw new IllegalArgumentException("Pet requires valid gender");
+        }
+
+        // Check pet weight is not null or less than 0
+        Integer weight = values.getAsInteger(PetEntry.COLUMN_PET_WEIGHT);
+        if (weight != null && weight < 0) {
+            throw new IllegalArgumentException("Pet requires valid weight");
+        }
 
         // Insert a new pet into the pets database table with the given ContentValues
         // Get writable db

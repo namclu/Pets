@@ -18,7 +18,7 @@ package com.example.android.pets;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +28,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.android.pets.data.PetContract.PetEntry;
-import com.example.android.pets.data.PetDbHelper;
 
 /**
  * Displays list of pets that were entered and stored in the app.
@@ -36,10 +35,6 @@ import com.example.android.pets.data.PetDbHelper;
 public class CatalogActivity extends AppCompatActivity {
 
     private static final String TAG = CatalogActivity.class.getSimpleName();
-
-    // Declare variables
-    private PetDbHelper mDbHelper;
-    private SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +50,6 @@ public class CatalogActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        mDbHelper = new PetDbHelper(this);
 
         displayDatabaseInfo();
     }
@@ -105,17 +98,6 @@ public class CatalogActivity extends AppCompatActivity {
                 PetEntry.COLUMN_PET_GENDER,
                 PetEntry.COLUMN_PET_WEIGHT};
 
-        // Perform SQL query "SELECT * FROM pets" using .query
-        // to get a Cursor that contains all rows from the pets table.
-        /*Cursor cursor = db.query(
-                PetEntry.TABLE_NAME,    // Table to query
-                null,                   // Columns to return
-                null,                   // Columns for the WHERE clause
-                null,                   // Values for the WHERE clause
-                null,                   // Don't group the rows
-                null,                   // Don't filter by row groups
-                null);                  // Sort order*/
-
         // Call ContentResolver query() method, which will call PetProvider query() method
         Cursor cursor = getContentResolver().query(
                 PetEntry.CONTENT_URI,   // Content URI
@@ -163,8 +145,6 @@ public class CatalogActivity extends AppCompatActivity {
 
     // Add a pet to database
     public void insertPet() {
-        // Get a writable database reference
-        db = mDbHelper.getWritableDatabase();
 
         // Create ContentValues object for a single pet
         ContentValues values = new ContentValues();
@@ -174,6 +154,7 @@ public class CatalogActivity extends AppCompatActivity {
         values.put(PetEntry.COLUMN_PET_WEIGHT, 7);
 
         // Insert a new row into database, returning ID of that new row
-        long newRowId = db.insert(PetEntry.TABLE_NAME, null, values);
+        //long newRowId = db.insert(PetEntry.TABLE_NAME, null, values);
+        Uri uri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
     }
 }

@@ -169,6 +169,29 @@ public class PetProvider extends ContentProvider {
      */
     @Override
     public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
+
+        final int match = sUriMatcher.match(uri);
+
+        switch (match) {
+            case PETS:
+                return updatePet(uri, contentValues, selection, selectionArgs);
+            case PET_ID:
+                // For the PET_ID code, extract out the ID from the URI,
+                // so we know which row to update. Selection will be "_id=?" and selection
+                // arguments will be a String array containing the actual ID.
+                selection = PetEntry._ID + "=?";
+                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                return updatePet(uri, contentValues, selection, selectionArgs);
+            default:
+                throw new IllegalArgumentException("Update is not supported for " + uri);
+        }
+    }
+
+    //
+    private int updatePet(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
+        // TODO: Update the selected pets in the pets database table with the given ContentValues
+        
+        // TODO: Return the number of rows that were affected
         return 0;
     }
 

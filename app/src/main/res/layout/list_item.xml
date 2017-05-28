@@ -6,7 +6,7 @@
               android:padding="@dimen/activity_margin">
 
     <TextView
-        android:id="@+id/name"
+        android:id="@+id/petName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif"
@@ -14,7 +14,7 @@
         android:textColor="#2b3d4d"/>
 
     <TextView
-        android:id="@+id/summary"
+        android:id="@+id/petSummary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif"

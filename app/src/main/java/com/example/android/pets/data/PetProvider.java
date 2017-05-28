@@ -74,7 +74,7 @@ public class PetProvider extends ContentProvider {
         Cursor cursor;
 
         // Check if the URI matcher matches the URI to a specific code
-        final int match = sUriMatcher.match(uri);
+        int match = sUriMatcher.match(uri);
 
         switch (match) {
             case PETS:

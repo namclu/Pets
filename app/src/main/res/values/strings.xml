@@ -61,8 +61,14 @@
 
     <!-- Label for dropdown menu option if the pet is female [CHAR LIMIT=20] -->
     <string name="gender_female">Female</string>
-    <string name="editor_insert_pet_success">Error with saving pet</string>
-    <string name="editor_insert_pet_failed">Pet saved</string>
+
+    <!-- EditorActivity assets -->
+    <string name="editor_insert_pet_success">Pet saved</string>
+    <string name="editor_insert_pet_failed">Error with saving pet</string>
+    <string name="editor_update_pet_success">Pet updated</string>
+    <string name="editor_update_pet_failed">Error with updating pet</string>
+
+    <!-- Empty view assets -->
     <string name="empty_view_title_text">It\'s a bit lonely here...</string>
     <string name="empty_view_subtitle_text">Get started by adding a pet.</string>
 </resources>

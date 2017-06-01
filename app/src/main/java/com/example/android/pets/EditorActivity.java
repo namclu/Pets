@@ -86,7 +86,7 @@ public class EditorActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         mPetUri = intent.getData();
 
-        // If petUri == null, set activity title to "Add a Pet", otherwise
+        // If mPetUri == null, set activity title to "Add a Pet", otherwise
         // this is an existing Pet so set activity title to "Edit Pet"
         if (mPetUri == null) {
             setTitle(R.string.editor_activity_title_new_pet);
@@ -241,7 +241,7 @@ public class EditorActivity extends AppCompatActivity implements
         mWeightEditText.setText("");
     }
 
-    // Get user input of Pet from editor and saves new Pet into database
+    // Get user input of Pet from editor and saves Pet into database
     private void savePet() {
         // Create db helper and get writable db
         PetDbHelper dbHelper = new PetDbHelper(this);
@@ -260,16 +260,30 @@ public class EditorActivity extends AppCompatActivity implements
         }
         values.put(PetEntry.COLUMN_PET_GENDER, mGender);
 
-        // Insert new row using PetProvider insert() method and get a URI
-        // then use URI to get the row ID.
-        Uri uri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
+        // If mPetUri == null, save a new Pet, otherwise
+        // this will update an existing Pet
+        if (mPetUri == null) {
+            // Insert new row using PetProvider insert() method and get a URI
+            // then use URI to get the row ID.
+            Uri uri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
 
-        if (uri == null) {
-            // If URI == null, then there was an error with db insertion
-            Toast.makeText(this, R.string.editor_insert_pet_success, Toast.LENGTH_SHORT).show();
+            if (uri == null) {
+                // If URI == null, then there was an error with db insertion
+                Toast.makeText(this, R.string.editor_insert_pet_failed, Toast.LENGTH_SHORT).show();
+            } else {
+                // Else db insertion successful and we display Toast
+                Toast.makeText(this, R.string.editor_insert_pet_success, Toast.LENGTH_SHORT).show();
+            }
         } else {
-            // Else db insertion successful and we display Toast
-            Toast.makeText(this, R.string.editor_insert_pet_failed, Toast.LENGTH_SHORT).show();
+            // Update an existing pet
+            int rowsUpdated = getContentResolver().update(mPetUri, values, null, null);
+            if (rowsUpdated == 0) {
+                // If no Pet was updated, then there was an error
+                Toast.makeText(this, R.string.editor_update_pet_failed, Toast.LENGTH_SHORT).show();
+            } else {
+                // Else Pet update successful
+                Toast.makeText(this, R.string.editor_update_pet_success, Toast.LENGTH_SHORT).show();
+            } 
         }
     }
 }

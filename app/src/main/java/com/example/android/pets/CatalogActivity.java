@@ -48,7 +48,7 @@ public class CatalogActivity extends AppCompatActivity implements
     private PetCursorAdapter mCursorAdapter;
 
     // Projection specifies which columns from db the query will actually use
-    private String[] projection = {
+    private String[] mProjection = {
             PetEntry._ID,
             PetEntry.COLUMN_PET_NAME,
             PetEntry.COLUMN_PET_BREED,
@@ -60,7 +60,7 @@ public class CatalogActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalog);
 
-        // Setup FAB to open EditorActivity
+        // Setup FAB to open EditorActivity to add a new Pet.
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,7 +80,7 @@ public class CatalogActivity extends AppCompatActivity implements
         // Call ContentResolver query() method, which will call PetProvider query() method
         Cursor cursor = getContentResolver().query(
                 PetEntry.CONTENT_URI,   // Content URI
-                projection,             // Project
+                mProjection,             // Project
                 null,                   // Selection
                 null,                   // SelectionArgs
                 null);                  // Sort Order
@@ -89,7 +89,8 @@ public class CatalogActivity extends AppCompatActivity implements
         mCursorAdapter = new PetCursorAdapter(this, cursor);
         petListView.setAdapter(mCursorAdapter);
 
-        // Setup item click listener to open EditorActivity, passing in content URI (if present)
+        // Setup item click listener to open EditorActivity to edit an existing Pet,
+        // passing the content URI for that Pet.
         petListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -140,7 +141,7 @@ public class CatalogActivity extends AppCompatActivity implements
 
         return new CursorLoader(this,   // Parent activity content
                 PetEntry.CONTENT_URI,   // Provider content URI to query
-                projection,             // Columns to include in Cursor
+                mProjection,            // Columns to include in Cursor
                 null,                   // No selection clause
                 null,                   // No selection args
                 null);                  // Default sort order

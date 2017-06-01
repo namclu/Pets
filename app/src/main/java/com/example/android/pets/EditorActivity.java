@@ -15,8 +15,13 @@
  */
 package com.example.android.pets;
 
+import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -31,6 +36,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.android.pets.adapter.PetCursorAdapter;
 import com.example.android.pets.data.PetDbHelper;
 
 import static com.example.android.pets.data.PetContract.PetEntry;
@@ -38,7 +44,13 @@ import static com.example.android.pets.data.PetContract.PetEntry;
 /**
  * Allows user to create a new pet or edit an existing one.
  */
-public class EditorActivity extends AppCompatActivity {
+public class EditorActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor>{
+
+    private static final int EDITOR_PET_LOADER = 1;
+
+    // Global fields
+    private PetCursorAdapter mCursorAdapter;
 
     /** EditText field to enter the pet's name */
     private EditText mNameEditText;
@@ -58,6 +70,17 @@ public class EditorActivity extends AppCompatActivity {
      */
     private int mGender = 0;
 
+    private String mSelection;
+    private String[] mSelectionArgs;
+
+    // Projection specifies which columns from db the query will actually use
+    private String[] mProjection = {
+            PetEntry._ID,
+            PetEntry.COLUMN_PET_NAME,
+            PetEntry.COLUMN_PET_BREED,
+            PetEntry.COLUMN_PET_GENDER,
+            PetEntry.COLUMN_PET_WEIGHT};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,11 +90,26 @@ public class EditorActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Uri petUri = intent.getData();
 
-        // Set title depending on if user tapped on FAB or existing Pet
+        // Set title depending on if user wants to "Add a Pet" using FAB
+        // or wants to "Edit Pet" by tapping on an existing Pet
         if (petUri == null) {
             setTitle(R.string.editor_activity_title_new_pet);
         } else {
             setTitle(R.string.editor_activity_title_edit_pet);
+
+            // Create a cursor where pet _id == the id from petUri
+            mSelection = PetEntry._ID + "=?";
+            mSelectionArgs = new String[] {String.valueOf(ContentUris.parseId(petUri))};
+
+            Cursor cursor = getContentResolver().query(
+                    PetEntry.CONTENT_URI,   // Content URI
+                    mProjection,            // Project
+                    mSelection,              // Selection
+                    mSelectionArgs,          // SelectionArgs
+                    null);                  // Sort Order
+
+            // Instantiate CursorAdapter
+            mCursorAdapter = new PetCursorAdapter(this, cursor);
         }
 
         // Find all relevant views that we will need to read user input from
@@ -81,6 +119,9 @@ public class EditorActivity extends AppCompatActivity {
         mGenderSpinner = (Spinner) findViewById(R.id.spinner_gender);
 
         setupSpinner();
+
+        // Prepare the loader
+        getLoaderManager().initLoader(EDITOR_PET_LOADER, null, this);
     }
 
     /**
@@ -151,6 +192,40 @@ public class EditorActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /*
+    * Required methods for LoaderManager.LoaderCallbacks<Cursor>
+    * */
+    // called when the system needs a new loader to be created
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        // Return a CursorLoader for a single pet
+        return new CursorLoader(this,   // Parent activity content
+                PetEntry.CONTENT_URI,   // Provider content URI to query
+                mProjection,            // Columns to include in Cursor
+                mSelection,             // No selection clause
+                mSelectionArgs,         // No selection args
+                null);                  // Default sort order
+    }
+
+    // called when a loader has finished loading data
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data.moveToFirst()) {
+            String petName = data.getString(data.getColumnIndex(PetEntry.COLUMN_PET_NAME));
+            if (!petName.isEmpty()) {
+                mNameEditText.setText(petName);
+            }
+        }
+    }
+
+    // called when a previously created loader is being reset (when you call destroyLoader(int)
+    // or when the activity or fragment is destroyed, and thus making its data unavailable.
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mCursorAdapter.swapCursor(null);
     }
 
     // Get user input of Pet from editor and saves new Pet into database

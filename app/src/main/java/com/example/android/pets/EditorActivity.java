@@ -242,25 +242,21 @@ public class EditorActivity extends AppCompatActivity implements
     // Get user input of Pet from editor and saves Pet into database
     private void savePet() {
 
-        // Flags to check if Pet info provided
-        boolean isNamePresent = false;
-        boolean isBreedPresent = false;
-        boolean isWeightPresent = false;
+        // Read from input fields, use trim to eliminate leading or trailing white space
+        String nameString = mNameEditText.getText().toString().trim();
+        String breedString = mBreedEditText.getText().toString().trim();
+        String weightString = mWeightEditText.getText().toString().trim();
 
         // Create ContentValues object and put user entered values into corresponding column names
         ContentValues values = new ContentValues();
-        if (!TextUtils.isEmpty(mNameEditText.getText())) {
-            values.put(PetEntry.COLUMN_PET_NAME, mNameEditText.getText().toString().trim());
-            isNamePresent = true;
+        if (!TextUtils.isEmpty(nameString)) {
+            values.put(PetEntry.COLUMN_PET_NAME, nameString);
         }
-        if (!TextUtils.isEmpty(mBreedEditText.getText())) {
-            values.put(PetEntry.COLUMN_PET_BREED, mBreedEditText.getText().toString().trim());
-            isBreedPresent = true;
+        if (!TextUtils.isEmpty(breedString)) {
+            values.put(PetEntry.COLUMN_PET_BREED, breedString);
         }
-        if (!TextUtils.isEmpty(mWeightEditText.getText())) {
-            int weight = Integer.parseInt(mWeightEditText.getText().toString().trim());
-            values.put(PetEntry.COLUMN_PET_WEIGHT, weight);
-            isWeightPresent = true;
+        if (!TextUtils.isEmpty(weightString)) {
+            values.put(PetEntry.COLUMN_PET_WEIGHT, weightString);
         }
         values.put(PetEntry.COLUMN_PET_GENDER, mGender);
 
@@ -268,12 +264,15 @@ public class EditorActivity extends AppCompatActivity implements
         // this will update an existing Pet
         if (mPetUri == null) {
             // If user has left all fields blank and mGenderSpinner == 0 (GENDER_UNKNOWN),
-            // then exit EditorActivity w/o adding a Pet
-            if (!isNamePresent && !isBreedPresent && !isWeightPresent &&
-                    mGenderSpinner.getSelectedItemId() == PetEntry.GENDER_UNKNOWN) {
-                Toast.makeText(this, "No data entered. Pet not saved", Toast.LENGTH_SHORT).show();
+            // then exit activity w/o adding a Pet
+            if (TextUtils.isEmpty(nameString) &&
+                    TextUtils.isEmpty(breedString) &&
+                    TextUtils.isEmpty(weightString) &&
+                    mGender == PetEntry.GENDER_UNKNOWN) {
+                Toast.makeText(this, R.string.editor_pet_not_saved, Toast.LENGTH_SHORT).show();
                 finish();
             } else {
+                // Add a new Pet
                 // Insert new row using PetProvider insert() method and get a URI
                 // then use URI to get the row ID.
                 Uri uri = getContentResolver().insert(PetEntry.CONTENT_URI, values);

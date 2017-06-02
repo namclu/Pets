@@ -67,6 +67,7 @@
     <string name="editor_insert_pet_failed">Error with saving pet</string>
     <string name="editor_update_pet_success">Pet updated</string>
     <string name="editor_update_pet_failed">Error with updating pet</string>
+    <string name="editor_pet_not_saved">No pet data entered</string>
 
     <!-- Empty view assets -->
     <string name="empty_view_title_text">It\'s a bit lonely here...</string>

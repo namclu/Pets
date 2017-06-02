@@ -35,8 +35,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.android.pets.data.PetDbHelper;
-
 import static com.example.android.pets.data.PetContract.PetEntry;
 
 /**
@@ -243,36 +241,50 @@ public class EditorActivity extends AppCompatActivity implements
 
     // Get user input of Pet from editor and saves Pet into database
     private void savePet() {
-        // Create db helper and get writable db
-        PetDbHelper dbHelper = new PetDbHelper(this);
+
+        // Flags to check if Pet info provided
+        boolean isNamePresent = false;
+        boolean isBreedPresent = false;
+        boolean isWeightPresent = false;
 
         // Create ContentValues object and put user entered values into corresponding column names
         ContentValues values = new ContentValues();
         if (!TextUtils.isEmpty(mNameEditText.getText())) {
             values.put(PetEntry.COLUMN_PET_NAME, mNameEditText.getText().toString().trim());
+            isNamePresent = true;
         }
         if (!TextUtils.isEmpty(mBreedEditText.getText())) {
             values.put(PetEntry.COLUMN_PET_BREED, mBreedEditText.getText().toString().trim());
+            isBreedPresent = true;
         }
         if (!TextUtils.isEmpty(mWeightEditText.getText())) {
             int weight = Integer.parseInt(mWeightEditText.getText().toString().trim());
             values.put(PetEntry.COLUMN_PET_WEIGHT, weight);
+            isWeightPresent = true;
         }
         values.put(PetEntry.COLUMN_PET_GENDER, mGender);
 
         // If mPetUri == null, save a new Pet, otherwise
         // this will update an existing Pet
         if (mPetUri == null) {
-            // Insert new row using PetProvider insert() method and get a URI
-            // then use URI to get the row ID.
-            Uri uri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
-
-            if (uri == null) {
-                // If URI == null, then there was an error with db insertion
-                Toast.makeText(this, R.string.editor_insert_pet_failed, Toast.LENGTH_SHORT).show();
+            // If user has left all fields blank and mGenderSpinner == 0 (GENDER_UNKNOWN),
+            // then exit EditorActivity w/o adding a Pet
+            if (!isNamePresent && !isBreedPresent && !isWeightPresent &&
+                    mGenderSpinner.getSelectedItemId() == PetEntry.GENDER_UNKNOWN) {
+                Toast.makeText(this, "No data entered. Pet not saved", Toast.LENGTH_SHORT).show();
+                finish();
             } else {
-                // Else db insertion successful and we display Toast
-                Toast.makeText(this, R.string.editor_insert_pet_success, Toast.LENGTH_SHORT).show();
+                // Insert new row using PetProvider insert() method and get a URI
+                // then use URI to get the row ID.
+                Uri uri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
+
+                if (uri == null) {
+                    // If URI == null, then there was an error with db insertion
+                    Toast.makeText(this, R.string.editor_insert_pet_failed, Toast.LENGTH_SHORT).show();
+                } else {
+                    // Else db insertion successful and we display Toast
+                    Toast.makeText(this, R.string.editor_insert_pet_success, Toast.LENGTH_SHORT).show();
+                }
             }
         } else {
             // Update an existing pet

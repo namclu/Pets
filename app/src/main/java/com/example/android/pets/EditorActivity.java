@@ -202,7 +202,8 @@ public class EditorActivity extends AppCompatActivity implements
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
-                // Do nothing for now
+                // Confirmation dialog for Delete Pet
+                showDeleteConfirmationDialog();
                 return true;
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
@@ -355,9 +356,9 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     /*
-     * Create "Discard Changes" dialog
+     * If editing a Pet, dialog appears to allow user to "Keep Editing" or "Discard" changes
+     * if user clicks on either the Up or Back button
      * */
-    /*private void showUnsavedChangesDialog(DialogInterface.OnClickListener discardButtonClickListener) {*/
     private void showUnsavedChangesDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the positive and negative buttons on the dialog.
@@ -381,5 +382,51 @@ public class EditorActivity extends AppCompatActivity implements
                 });
         // Create and show the AlertDialog
         builder.create().show();
+    }
+
+    /*
+     * If user clicks on "Delete" a Pet, dialog appears to allow user to "Delete" or "Cancel"
+     * the operation
+     * */
+    private void showDeleteConfirmationDialog() {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_dialog_msg)
+                .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User clicked on "Delete" button, so proceed w deleting a Pet
+                        deletePet();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User clicked on "Cancel" button, so dismiss the dialog
+                        dialog.dismiss();
+                    }
+                });
+        // Create and show the AlertDialog
+        builder.create().show();
+    }
+
+    /**
+     * Perform the deletion of the pet in the database.
+     */
+    private void deletePet() {
+        // Only  delete if this is an existing pet.
+        if (mPetUri != null) {
+            int rowDeleted = getContentResolver().delete(mPetUri, null, null);
+
+            if (rowDeleted == 0) {
+                // Show toast if Pet failed to delete
+                Toast.makeText(this, R.string.editor_delete_pet_failed, Toast.LENGTH_SHORT).show();
+            } else {
+                // Else show toast if Pet deleted successfully
+                Toast.makeText(this, R.string.editor_delete_pet_successful, Toast.LENGTH_SHORT).show();
+            }
+        }
+        finish();
     }
 }

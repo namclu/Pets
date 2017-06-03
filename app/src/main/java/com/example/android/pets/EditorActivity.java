@@ -18,16 +18,19 @@ package com.example.android.pets;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -41,7 +44,7 @@ import static com.example.android.pets.data.PetContract.PetEntry;
  * Allows user to create a new pet or edit an existing one.
  */
 public class EditorActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor>{
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int EDITOR_PET_LOADER = 1;
 
@@ -67,6 +70,9 @@ public class EditorActivity extends AppCompatActivity implements
      */
     private int mGender = 0;
 
+    // Boolean to track whether Pet has been edited (true) or not (false)
+    private boolean mPetHasChanged = false;
+
     // Projection specifies which columns from db the query will actually use
     private String[] mProjection = {
             PetEntry._ID,
@@ -74,6 +80,17 @@ public class EditorActivity extends AppCompatActivity implements
             PetEntry.COLUMN_PET_BREED,
             PetEntry.COLUMN_PET_GENDER,
             PetEntry.COLUMN_PET_WEIGHT};
+    /*
+    * OnTouchListener that listens for any user touches on a View, implying that they are modifying
+    * the view, and we change the mPetHasChanged boolean to true.
+    * */
+    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent event) {
+            mPetHasChanged = true;
+            return false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +117,13 @@ public class EditorActivity extends AppCompatActivity implements
         mBreedEditText = (EditText) findViewById(R.id.edit_pet_breed);
         mWeightEditText = (EditText) findViewById(R.id.edit_pet_weight);
         mGenderSpinner = (Spinner) findViewById(R.id.spinner_gender);
+
+        // Setup OnTouchListeners on all the input fields to determine if user has touched
+        // or modified them
+        mNameEditText.setOnTouchListener(mTouchListener);
+        mBreedEditText.setOnTouchListener(mTouchListener);
+        mWeightEditText.setOnTouchListener(mTouchListener);
+        mGenderSpinner.setOnTouchListener(mTouchListener);
 
         setupSpinner();
     }
@@ -167,11 +191,28 @@ public class EditorActivity extends AppCompatActivity implements
                 return true;
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
-                // Navigate back to parent activity (CatalogActivity)
-                NavUtils.navigateUpFromSameTask(this);
+                if (!mPetHasChanged) {
+                    // Navigate back to parent activity (CatalogActivity)
+                    NavUtils.navigateUpFromSameTask(this);
+                    return true;
+                }
+                showUnsavedChangesDialog();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // If the pet hasn't changed, continue with handling back button press
+        if (!mPetHasChanged) {
+            super.onBackPressed();
+            return;
+        }
+        // Otherwise if there are unsaved changes, setup a dialog to warn the user.
+        // Show dialog that there are unsaved changes
+        showUnsavedChangesDialog();
+
     }
 
     /*
@@ -294,7 +335,36 @@ public class EditorActivity extends AppCompatActivity implements
             } else {
                 // Else Pet update successful
                 Toast.makeText(this, R.string.editor_update_pet_success, Toast.LENGTH_SHORT).show();
-            } 
+            }
         }
+    }
+
+    /*
+     * Create "Discard Changes" dialog
+     * */
+    /*private void showUnsavedChangesDialog(DialogInterface.OnClickListener discardButtonClickListener) {*/
+    private void showUnsavedChangesDialog() {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.unsaved_changes_dialog_msg)
+                .setPositiveButton(R.string.discard, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User clicked the "Discard" button, so exit editing and return
+                        // back to parent activity (CatalogActivity)
+                        finish();
+                    }
+                })
+                .setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
+                        @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User clicked the "Keep editing" button, so dismiss the dialog
+                        // and continue editing the pet.
+                        dialog.dismiss();
+                    }
+                });
+        // Create and show the AlertDialog
+        builder.create().show();
     }
 }

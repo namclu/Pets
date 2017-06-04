@@ -89,7 +89,22 @@
     <!-- Dialog button text for the option to cancel deletion of the current pet [CHAR LIMIT=20] -->
     <string name="cancel">Cancel</string>
 
+    <!--  showDeleteAllPetsConfirmationDialog() assets -->
+    <!-- Toast message in catalog when current pet was successfully deleted [CHAR LIMIT=NONE] -->
+    <string name="catalog_delete_all_pets_successful">All Pets deleted</string>
+    <!-- Toast message in catalog when current pet has failed to be deleted [CHAR LIMIT=NONE] -->
+    <string name="catalog_delete_all_pets_failed">Error with deleting all Pets</string>
+    <!-- Dialog message to ask the user to confirm deleting the current pet [CHAR LIMIT=NONE] -->
+    <string name="catalog_no_pets_to_delete">No Pets to delete</string>
+    <!-- Dialog message to ask the user to confirm deleting the current pet [CHAR LIMIT=NONE] -->
+    <string name="delete_all_dialog_msg">Delete all Pets?</string>
+    <!-- Dialog button text for the option to confirm deleting the current pet [CHAR LIMIT=20] -->
+    <string name="delete_all">Delete All</string>
+
     <!-- Empty view assets -->
     <string name="empty_view_title_text">It\'s a bit lonely here...</string>
     <string name="empty_view_subtitle_text">Get started by adding a pet.</string>
+
+    <!-- Toast message assets -->
+    <string name="toast_confirm_pets_deleted">" "Pet(s) deleted from database</string>
 </resources>

@@ -373,11 +373,13 @@ public class EditorActivity extends AppCompatActivity implements
                     }
                 })
                 .setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
-                        @Override
+                    @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // User clicked the "Keep editing" button, so dismiss the dialog
                         // and continue editing the pet.
-                        dialog.dismiss();
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
                     }
                 });
         // Create and show the AlertDialog
@@ -404,7 +406,9 @@ public class EditorActivity extends AppCompatActivity implements
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // User clicked on "Cancel" button, so dismiss the dialog
-                        dialog.dismiss();
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
                     }
                 });
         // Create and show the AlertDialog

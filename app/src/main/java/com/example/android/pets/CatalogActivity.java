@@ -19,18 +19,21 @@ import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.android.pets.adapter.PetCursorAdapter;
 import com.example.android.pets.data.PetContract.PetEntry;
@@ -126,7 +129,15 @@ public class CatalogActivity extends AppCompatActivity implements
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
-                // Do nothing for now
+                if (getContentResolver().query(PetEntry.CONTENT_URI, null, null, null, null)
+                        .getCount() > 0) {
+                    // If there is at least 1 Pet in the database, then show confirmation dialog
+                    // for "Delete All Pets"
+                    showDeleteAllPetsConfirmationDialog();
+                } else {
+                    // Else display message "No Pets to delete"
+                    Toast.makeText(this, R.string.catalog_no_pets_to_delete, Toast.LENGTH_SHORT).show();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -173,5 +184,44 @@ public class CatalogActivity extends AppCompatActivity implements
         // Insert a new row into database, returning ID of that new row
         //long newRowId = db.insert(PetEntry.TABLE_NAME, null, values);
         Uri uri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
+    }
+
+    /*
+    * If user clicks on "Delete All Pets", dialog appears to allow user to "Delete All" or "Cancel"
+    * the operation
+    * */
+    private void showDeleteAllPetsConfirmationDialog() {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_all_dialog_msg)
+                .setPositiveButton(R.string.delete_all, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User clicked on "Delete All" button, so proceed w deleting all Pets
+                        deleteAllPets();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User clicked on "Cancel" button, so dismiss the dialog
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                    }
+                });
+        // Create and show the AlertDialog
+        builder.create().show();
+    }
+    /*
+    * Delete all Pets from database
+    * */
+    public void deleteAllPets() {
+
+        int rowsDeleted = getContentResolver().delete(PetEntry.CONTENT_URI, null, null);
+        // Confirmation message that 1 Pet was deleted
+        Toast.makeText(this, rowsDeleted + getString(R.string.toast_confirm_pets_deleted),
+                Toast.LENGTH_SHORT).show();
     }
 }

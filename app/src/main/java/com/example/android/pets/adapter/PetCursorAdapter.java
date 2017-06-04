@@ -2,6 +2,7 @@ package com.example.android.pets.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,6 +68,12 @@ public class PetCursorAdapter extends CursorAdapter {
 
         // Set data to view
         textPetName.setText(name);
-        textPetSummary.setText(breed);
+        if (TextUtils.isEmpty(breed)) {
+            // If Pet breed is empty, set String to "Unknown"
+            textPetSummary.setText(R.string.unknown_breed);
+        } else {
+            // Else if breed is present, set the Pet breed
+            textPetSummary.setText(breed);
+        }
     }
 }

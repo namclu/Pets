@@ -21,7 +21,7 @@ import static com.example.android.pets.data.PetContract.PetEntry.isValidGender;
 public class PetProvider extends ContentProvider {
 
     /** Tag for the log messages */
-    public static final String LOG_TAG = PetProvider.class.getSimpleName();
+    private static final String LOG_TAG = PetProvider.class.getSimpleName();
 
     /** URI matcher code for the content URI for the pets table */
     private static final int PETS = 100;

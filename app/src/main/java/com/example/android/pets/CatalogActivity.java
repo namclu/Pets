@@ -23,7 +23,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -172,7 +171,7 @@ public class CatalogActivity extends AppCompatActivity implements
     }
 
     // Add a pet to database
-    public void insertPet() {
+    private void insertPet() {
 
         // Create ContentValues object for a single pet
         ContentValues values = new ContentValues();
@@ -183,7 +182,7 @@ public class CatalogActivity extends AppCompatActivity implements
 
         // Insert a new row into database, returning ID of that new row
         //long newRowId = db.insert(PetEntry.TABLE_NAME, null, values);
-        Uri uri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
+        getContentResolver().insert(PetEntry.CONTENT_URI, values);
     }
 
     /*
@@ -217,7 +216,7 @@ public class CatalogActivity extends AppCompatActivity implements
     /*
     * Delete all Pets from database
     * */
-    public void deleteAllPets() {
+    private void deleteAllPets() {
 
         int rowsDeleted = getContentResolver().delete(PetEntry.CONTENT_URI, null, null);
         // Confirmation message that 1 Pet was deleted

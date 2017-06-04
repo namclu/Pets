@@ -15,7 +15,7 @@ public final class PetContract {
     // Constant for content authority
     public static final String CONTENT_AUTHORITY = "com.example.android.pets";
     // Constant for the base URI, which is the scheme + content authority
-    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+    private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     // Possible path to the pets table
     public static final String PATH_PETS = "pets";
 
@@ -68,10 +68,7 @@ public final class PetContract {
          * or {@link #GENDER_FEMALE}.
          */
         public static boolean isValidGender(int gender) {
-            if (gender == GENDER_UNKNOWN || gender == GENDER_MALE || gender == GENDER_FEMALE) {
-                return true;
-            }
-            return false;
+            return gender == GENDER_UNKNOWN || gender == GENDER_MALE || gender == GENDER_FEMALE;
         }
     }
 }
